@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    hello
+    <script>
+        var ws = new WebSocket("ws://localhost:3000/ws");
+        ws.onopen = function () {
+            ws.send(JSON.stringify({"Message": "hello"}))
+            ws.send(JSON.stringify({"Message": "hello1"}))
+            ws.send(JSON.stringify({"Message": "hello2"}))
+            ws.send(JSON.stringify({"Message": "hello3"}))
+            ws.send(JSON.stringify({"Message": "hello4"}))
+            ws.send(JSON.stringify({"Message": "hello5"}))
+            // Web Socket is connected, send data using send()
+            ws.send("Message to send");
+        };
+
+        ws.addEventListener('message', function(e) {
+            console.log(e.data)
+        })
+    </script>
+</body>
+
+</html>
