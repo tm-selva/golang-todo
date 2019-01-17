@@ -4,13 +4,11 @@ import (
 	"log"
 	"net/http"
 
+	socketservice "../services/socket"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	uuid "github.com/satori/go.uuid"
 )
-
-type Message struct {
-	Message string `json:"message"`
-}
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
@@ -23,7 +21,7 @@ func InitiateSocketServer(router *gin.Engine) {
 	router.GET("/ws", func(c *gin.Context) {
 		handleConnections(c.Writer, c.Request)
 	})
-	// go handleMessages()
+	go socketservice.InitiateSocketWorker()
 }
 
 func handleConnections(w http.ResponseWriter, r *http.Request) {
@@ -31,24 +29,15 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer ws.Close()
 	// Save the socket client in some manner. so that we could get back
+	var userId uuid.UUID
+	userId, _ = uuid.NewV4()
+	socketClient := socketservice.Register(ws, userId.String())
 	// database.RedisClient.Set("socket", "value", 0).Err()
 	// if err != nil {
 	// 	panic(err)
 	// }
 
-	// to the client for sending the messages
-	for {
-		var msg Message
-		err := ws.ReadJSON(&msg)
-		if err != nil {
-			log.Printf("error: %v", err)
-			break
-		}
-		// Based on the message type we could publish the message to the
-		// individual receiver or to a group
-		// Send the newly received message to the broadcast channel
-		// broadcast <- msg
-	}
+	// listen for the incoming socket message
+	go socketClient.IncomingSocketMessageListener()
 }

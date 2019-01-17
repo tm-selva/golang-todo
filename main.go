@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 
@@ -24,14 +23,12 @@ func main() {
 	server.InitiateSocketServer(router)
 
 	// Serve frontend static files
-	fs := http.FileServer(http.Dir("public"))
-	http.Handle("/", fs)
+
+	router.Static("/index", "public")
 
 	authRoute.Routes(router)
 
-	// setting up server
-	// err := http.ListenAndServe(":3000", nil)
-	err := http.ListenAndServe(":3000", router)
+	err := router.Run(":3000")
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}

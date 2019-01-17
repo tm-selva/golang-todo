@@ -12,12 +12,8 @@
     hello
     <script>
         var ws = new WebSocket("ws://localhost:3000/ws");
+        var socketInfo, message;
         ws.onopen = function () {
-            ws.send(JSON.stringify({"Message": "hello"}))
-            ws.send(JSON.stringify({"Message": "hello1"}))
-            ws.send(JSON.stringify({"Message": "hello2"}))
-            ws.send(JSON.stringify({"Message": "hello3"}))
-            ws.send(JSON.stringify({"Message": "hello4"}))
             ws.send(JSON.stringify({"Message": "hello5"}))
             // Web Socket is connected, send data using send()
             ws.send("Message to send");
@@ -25,7 +21,12 @@
 
         ws.addEventListener('message', function(e) {
             console.log(e.data)
-        })
+            if(e.data.type = "socketId") {
+                socketInfo = e.data;
+            } else {
+                message = e.data;
+            }
+        });
     </script>
 </body>
 
